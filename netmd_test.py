@@ -1,4 +1,6 @@
 #!/usr/bin/python
+from __future__ import print_function
+from builtins import input
 import usb1
 import libnetmd
 import time
@@ -20,7 +22,7 @@ def main(bus=None, device_address=None, show_uuids=False):
             count += 1
         print("Enter device number to attempt netmd test, any other key to terminate")
         try:
-            selection = input()
+            selection = eval(input())
             if type(selection) == type(int()):
                 if selection < len(devs):
                     print("attempting to test %s" % devs[selection])
@@ -45,8 +47,10 @@ def testMD(md, show_uuids):
 
     md_iface = libnetmd.NetMDInterface(md)
 
+    md_iface.getStatus()
+
     try:
-        print 'Acquire Device',
+        print('Acquire Device', end=' ')
         md_iface.acquire()
         print('....OK')
     except Exception as err:
@@ -54,7 +58,7 @@ def testMD(md, show_uuids):
         print('Error: {0}'.format(err))
 
     try:
-        print 'Get Status',
+        print('Get Status', end=' ')
         md_iface.getStatus()
         print('....OK')
     except Exception as err:
@@ -63,7 +67,7 @@ def testMD(md, show_uuids):
 
 
     try:
-        print 'Get Disc Flags',
+        print('Get Disc Flags', end=' ')
         md_iface.getDiscFlags()
         print('....OK')
     except Exception as err:
@@ -72,39 +76,39 @@ def testMD(md, show_uuids):
 
 
     try:
-        print 'Get Disc Title',
+        print('Get Disc Title', end=' ')
         title =  md_iface.getDiscTitle()
         print('....OK')
-        print title
+        print(title)
     except Exception as err:
         print('....FAIL')
         print('Error: {0}'.format(err))
 
     try:
-        print 'Get Disc Capacity',
+        print('Get Disc Capacity', end=' ')
         disc_used, disc_total, disc_left = md_iface.getDiscCapacity()
         print('....OK')
         disc_total = timeToFrames(disc_total)
         disc_left = timeToFrames(disc_left)
-        print 'Time used: %02i:%02i:%02i+%03i (%.02f%%)' % (
+        print('Time used: %02i:%02i:%02i+%03i (%.02f%%)' % (
             disc_used[0], disc_used[1], disc_used[2], disc_used[3],
-            (disc_total - disc_left) / float(disc_total) * 100)
+            (disc_total - disc_left) / float(disc_total) * 100))
     except Exception as err:
         print('....FAIL')
         print('Error: {0}'.format(err))
 
     try:
-        print 'Get Track Count',
+        print('Get Track Count', end=' ')
         cnt = md_iface.getTrackCount()
         print('....OK')
-        print '%i tracks' % (cnt)
+        print('%i tracks' % (cnt))
     except Exception as err:
         print('....FAIL')
         print('Error: {0}'.format(err))
 
 
     try:
-        print 'Get Length track 2',
+        print('Get Length track 2', end=' ')
         md_iface.getTrackLength(1)
         print('....OK')
     except Exception as err:
@@ -112,7 +116,7 @@ def testMD(md, show_uuids):
         print('Error: {0}'.format(err))
 
     try:
-        print 'Get Encoding Track 2',
+        print('Get Encoding Track 2', end=' ')
         md_iface.getTrackEncoding(1)
         print('....OK')
     except Exception as err:
@@ -120,7 +124,7 @@ def testMD(md, show_uuids):
         print('Error: {0}'.format(err))
 
     try:
-        print 'Get Flags Track 2',
+        print('Get Flags Track 2', end=' ')
         md_iface.getTrackFlags(1)
         print('....OK')
     except Exception as err:
@@ -128,7 +132,7 @@ def testMD(md, show_uuids):
         print('Error: {0}'.format(err))
 
     try:
-        print 'Move Track 1 to Track 2',
+        print('Move Track 1 to Track 2', end=' ')
         md_iface.moveTrack(0,1)
         print('....OK')
     except Exception as err:
@@ -136,7 +140,7 @@ def testMD(md, show_uuids):
         print('Error: {0}'.format(err))
 
     try:
-        print 'Play',
+        print('Play', end=' ')
         md_iface.play()
         time.sleep(2)
         print('....OK')
@@ -145,7 +149,7 @@ def testMD(md, show_uuids):
         print('Error: {0}'.format(err))
 
     try:
-        print 'Skip forward',
+        print('Skip forward', end=' ')
         md_iface.nextTrack()
         time.sleep(2)
         print('....OK')
@@ -154,7 +158,7 @@ def testMD(md, show_uuids):
         print('Error: {0}'.format(err))
 
     try:
-        print 'Pause',
+        print('Pause', end=' ')
         md_iface.pause()
         time.sleep(2)
         print('....OK')
@@ -163,7 +167,7 @@ def testMD(md, show_uuids):
         print('Error: {0}'.format(err))
 
     try:
-        print 'Play',
+        print('Play', end=' ')
         md_iface.play()
         time.sleep(2)
         print('....OK')
@@ -172,7 +176,7 @@ def testMD(md, show_uuids):
         print('Error: {0}'.format(err))
 
     try:
-        print 'Get position',
+        print('Get position', end=' ')
         md_iface.getPosition()
         print('....OK')
     except Exception as err:
@@ -180,7 +184,7 @@ def testMD(md, show_uuids):
         print('Error: {0}'.format(err))
 
     try:
-        print 'Stop',
+        print('Stop', end=' ')
         md_iface.stop()
         print('....OK')
     except Exception as err:
@@ -189,7 +193,7 @@ def testMD(md, show_uuids):
 
     try:
         # enter secure session
-        print 'Enter Secure Session',
+        print('Enter Secure Session', end=' ')
         md_iface.enterSecureSession()
         print('....OK')
     except Exception as err:
@@ -197,7 +201,7 @@ def testMD(md, show_uuids):
         print('Error: {0}'.format(err))
 
     try:
-        print 'Get Leaf ID',
+        print('Get Leaf ID', end=' ')
         md_iface.getLeafID()
         print('....OK')
     except Exception as err:
@@ -205,7 +209,7 @@ def testMD(md, show_uuids):
         print('Error: {0}'.format(err))
 
     try:
-        print 'Leave Secure Session',
+        print('Leave Secure Session', end=' ')
         md_iface.leaveSecureSession()
         print('....OK')
     except Exception as err:
@@ -213,7 +217,7 @@ def testMD(md, show_uuids):
         print('Error: {0}'.format(err))
 
     try:
-        print 'Release Device',
+        print('Release Device', end=' ')
         md_iface.release()
         print('....OK')
     except Exception as err:
@@ -258,7 +262,7 @@ def ls_usb ():
 #            return (device.getVendorID(), device.getProductID()) in filter_set
     context = usb1.LibUSBContext()
     for device in context.getDeviceList():
-            print device
+            print(device)
 
 
 
