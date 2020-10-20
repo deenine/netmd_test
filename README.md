@@ -10,7 +10,7 @@ This is only compatible with python2, so if python2 is not your default python, 
 
 Succesful run:
 ```
-$ python netmd_test.py 
+$ python netmd_test.py
 Found NetMD: Bus 020 Device 022: ID 054c:0081 Sony Net MD
 Found 1 netmd_devs
 Acquire Device ....OK
@@ -60,7 +60,7 @@ in <- 18 06 02 10 10 00 30 80 03 00 ff 00 00 00 00 00
 netmd status: 0A
 ```
 
-In the event that a test fails, try unplugging the device, turning it off and on again, then replugging it and re-run the test. If it is a bookshelf or deck, remember to put it into netmd mode, and if it is a Hi-MD device, make sure the disk is formatted as MD not Hi-MD. 
+In the event that a test fails, try unplugging the device, turning it off and on again, then replugging it and re-run the test. If it is a bookshelf or deck, remember to put it into netmd mode, and if it is a Hi-MD device, make sure the disk is formatted as MD not Hi-MD.
 
 If the test fails again, please open an issue on this repository and post the output of the tool, along with the model of the device.
 
@@ -93,5 +93,10 @@ If you are using 64-bit Windows, copy `libusb-1.0.dll` from the directory where 
 
 Open the windows system environment settings and make sure that the python directory above is on the system PATH (not the user path).
 
+You need to replace the sony driver with the libusb driver using [Zadig](https://zadig.akeo.ie/), for any device that you wish to test (you can roll back the driver later if required). Connect your NetMD device, open the app and click the "Install Driver" button. Please note, this will disable Sonic Stage from having access to the device, you'll need to run Zadig and 'reinstall' the old driver to use it again, or use windows device manager to roll back to the sony driver.
+
+
 Open a terminal in the directory you cloned the tool to, and run the tool:
 `python2 netmd_test.py`
+
+If you get a error like `libusb1.USBError: LIBUSB_ERROR_NOT_SUPPORTED` it is likely you are trying to connect to a netmd device that has the sony driver installed, not the libusb driver.
