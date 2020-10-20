@@ -1,6 +1,5 @@
 #!/usr/bin/python
 from __future__ import print_function
-from builtins import input
 import usb1
 import libnetmd
 import time
@@ -191,6 +190,7 @@ def testMD(md, show_uuids):
         print('....FAIL')
         print('Error: {0}'.format(err))
 
+
     try:
         # enter secure session
         print('Enter Secure Session', end=' ')
@@ -200,6 +200,15 @@ def testMD(md, show_uuids):
         print('....FAIL')
         print('Error: {0}'.format(err))
 
+
+    """
+        print('cacheTOC')
+        md_iface.cacheTOC()
+        print('set disc title')
+        md_iface.setDiscTitle('Test 780')
+        print('syncTOC')
+        md_iface.syncTOC()
+    """
     try:
         print('Get Leaf ID', end=' ')
         md_iface.getLeafID()

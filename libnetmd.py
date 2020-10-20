@@ -850,14 +850,38 @@ class NetMDInterface(object):
             If True, return the content of wchar title.
             If False, return the ASCII title.
         """
-        if HANDSHAKE:
-            query = self.formatQuery('18 08 10 18 01 03 00')
-            reply = self.send_query(query)
+        """
+        A.3.2.4 Set Disc Title
+            Request
+            <00 18 07> <02: 20 18 01 00 $w, 30 00 0a 00> 50 00 $l $l 00 00 $o $o <data>
+            Request
+            <09 18 07> <02: 20 18 01 00 $w, 30 00 0a 00> 50 00 $l $l 00 00 $o $o
+            This function sets the disc title to <data>. $o is the length of the old disc title, $l is the
+            length of the new disc title <data>. If $w is 00, the normal title is set, if it is 01 the wchar title is set.
+            """
+            # 18 08 10 18 01 00 00
+            # 18 08 10 18 01 03 00
+            # 18 08 10 18 01 01 00
+
+
         if wchar:
             wchar = 1
         else:
             wchar = 0
-        old_len = len(self.getDiscTitle())
+        old_title = self.getDiscTitle()
+        print(old_title)
+        print(title)
+        old_len = len(old_title)     #                %w          $o $o
+#ss      00 18 07 02 20 18 01 00 00 30 00 0a 00 50 00 00 0d 00 00 00 09       54 65 73 74 20 44 69 73 63 20 37 38 30
+#py         18 07 02 20 18 01 00 00 30 00 0a 00 50 00 00 08 00 00 00 04 00 09 54 65 73 74 20 37 38 30 00
+        if HANDSHAKE:
+            query = self.formatQuery('18 08 10 18 01 01 00')
+            reply = self.send_query(query)
+            query = self.formatQuery('18 08 10 18 01 00 00')
+            reply = self.send_query(query)
+            query = self.formatQuery('18 08 10 18 01 03 00')
+            reply = self.send_query(query)
+
         query = self.formatQuery('1807 02201801 00%b 3000 0a00 5000 %w 0000 ' \
                                  '%w %s', wchar, len(title), old_len, title)
         reply = self.send_query(query)

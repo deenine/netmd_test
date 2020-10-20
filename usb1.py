@@ -19,20 +19,12 @@ Features:
   See USBPoller, USBTransfer and USBTransferHelper.
 """
 from __future__ import print_function
-from __future__ import division
 
-from future import standard_library
-standard_library.install_aliases()
-from builtins import zip
-from builtins import range
-from past.builtins import basestring
-from builtins import object
-from past.utils import old_div
 import libusb1
 from ctypes import byref, create_string_buffer, c_int, sizeof, POINTER, \
     create_unicode_buffer, c_wchar, cast, c_uint16, c_ubyte, string_at, \
     addressof, c_void_p, cdll
-from io import StringIO
+from cStringIO import StringIO
 import sys
 from ctypes.util import find_library
 
@@ -297,9 +289,9 @@ class USBTransfer(object):
         string_buffer = create_binary_buffer(buffer_or_len)
         buffer_length = sizeof(string_buffer)
         if iso_transfer_length_list is None:
-            iso_length = old_div(buffer_length, num_iso_packets)
+            iso_length = buffer_length / num_iso_packets
             iso_transfer_length_list = [iso_length for _ in
-                range(num_iso_packets)]
+                xrange(num_iso_packets)]
         configured_iso_packets = len(iso_transfer_length_list)
         if configured_iso_packets > num_iso_packets:
             raise ValueError('Too many ISO transfer lengths (%i), there are '
@@ -767,7 +759,7 @@ class USBDeviceHandle(object):
         langid_list = cast(descriptor_string, POINTER(c_uint16))
         result = []
         append = result.append
-        for offset in range(1, old_div(length, 2)):
+        for offset in xrange(1, length / 2):
             append(libusb1.libusb_le16_to_cpu(langid_list[offset]))
         return result
 
@@ -779,7 +771,7 @@ class USBDeviceHandle(object):
         Return None if there is no such descriptor on device.
         """
         descriptor_string = create_unicode_buffer(
-            old_div(STRING_LENGTH, sizeof(c_wchar)))
+            STRING_LENGTH / sizeof(c_wchar))
         result = libusb1.libusb_get_string_descriptor(self.__handle,
             descriptor, lang_id, descriptor_string, sizeof(descriptor_string))
         if result == libusb1.LIBUSB_ERROR_NOT_FOUND:
@@ -964,7 +956,7 @@ class USBDevice(object):
         # Fetch all configuration descriptors
         self.__configuration_descriptor_list = []
         append = self.__configuration_descriptor_list.append
-        for configuration_id in range(device_descriptor.bNumConfigurations):
+        for configuration_id in xrange(device_descriptor.bNumConfigurations):
             config = libusb1.libusb_config_descriptor_p()
             result = libusb1.libusb_get_config_descriptor(device_p,
                 configuration_id, byref(config))
@@ -1004,10 +996,10 @@ class USBDevice(object):
                 self._getASCIIStringDescriptor(config.iConfiguration)), file=out)
             print('  Max Power: %i mA' % (config.MaxPower * 2, ), file=out)
             # TODO: bmAttributes dump
-            for interface_num in range(config.bNumInterfaces):
+            for interface_num in xrange(config.bNumInterfaces):
                 interface = config.interface[interface_num]
                 print('  Interface %i' % (interface_num, ), file=out)
-                for alt_setting_num in range(interface.num_altsetting):
+                for alt_setting_num in xrange(interface.num_altsetting):
                     altsetting = interface.altsetting[alt_setting_num]
                     print('    Alt Setting %i: %s' % (alt_setting_num,
                         self._getASCIIStringDescriptor(altsetting.iInterface)), file=out)
@@ -1016,7 +1008,7 @@ class USBDevice(object):
                          altsetting.bInterfaceSubClass), file=out)
                     print('      Protocol: %02x' % \
                         (altsetting.bInterfaceProtocol, ), file=out)
-                    for endpoint_num in range(altsetting.bNumEndpoints):
+                    for endpoint_num in xrange(altsetting.bNumEndpoints):
                         endpoint = altsetting.endpoint[endpoint_num]
                         print('      Endpoint %i' % (endpoint_num, ), file=out)
                         print('        Address: %02x' % \
