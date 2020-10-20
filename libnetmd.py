@@ -46,6 +46,7 @@ class defaultUploadEvents:
 
 
 KNOWN_USB_ID_SET = frozenset([
+    (0x054c, 0x013f), # Sony MDS-S500
     (0x054c, 0x0081), # Sony MDS-JB980/780
     (0x04dd, 0x7202), # Sharp IM-MT899H
     (0x054c, 0x0075), # Sony MZ-N1
@@ -684,9 +685,12 @@ class NetMDInterface:
         query = self.formatQuery('1840 ff 0000')
         reply = self.send_query(query)
         self.scanQuery(reply, '1840 00 0000')
+        #here
 
     def syncTOC(self):
-        query = self.formatQuery('1808 10180200 00')
+        query = self.formatQuery('18 08 10 18 01 00 00')
+        reply = self.send_query(query)
+        query = self.formatQuery('18 08 10 18 02 00 00')
         reply = self.send_query(query)
         return self.scanQuery(reply, '1808 10180200 00')
 
@@ -720,6 +724,7 @@ class NetMDInterface:
         return ord(data[5])
 
     def _getDiscTitle(self, wchar=False):
+        #here
         # XXX: long title support untested.
         if wchar:
             wchar_value = 1
@@ -833,6 +838,7 @@ class NetMDInterface:
         return result
 
     def setDiscTitle(self, title, wchar=False):
+        #here
         """
           Set disc title.
           title (str)
@@ -850,6 +856,7 @@ class NetMDInterface:
             This function sets the disc title to <data>. $o is the length of the old disc title, $l is the
             length of the new disc title <data>. If $w is 00, the normal title is set, if it is 01 the wchar title is set.
             """
+            #0x00, 0x18, 0x08, 0x10, 0x18, 0x02, 0x00, 0x00 synctoc
             # 18 08 10 18 01 00 00
             # 18 08 10 18 01 03 00
             # 18 08 10 18 01 01 00
@@ -865,6 +872,7 @@ class NetMDInterface:
         old_len = len(old_title)     #                %w          $o $o
 #ss      00 18 07 02 20 18 01 00 00 30 00 0a 00 50 00 00 0d 00 00 00 09       54 65 73 74 20 44 69 73 63 20 37 38 30
 #py         18 07 02 20 18 01 00 00 30 00 0a 00 50 00 00 08 00 00 00 04 00 09 54 65 73 74 20 37 38 30 00
+
         if HANDSHAKE:
             query = self.formatQuery('18 08 10 18 01 01 00')
             reply = self.send_query(query)
@@ -880,6 +888,7 @@ class NetMDInterface:
                               '%?%?')
 
     def setTrackTitle(self, track, title, wchar=False):
+        #here
         """
           Set track title.
           track (int)
@@ -898,6 +907,13 @@ class NetMDInterface:
             old_len = len(self.getTrackTitle(track))
         except NetMDRejected:
             old_len = 0
+        if HANDSHAKE:
+            query = self.formatQuery('18 08 10 18 02 01 00')
+            reply = self.send_query(query)
+            query = self.formatQuery('18 08 10 18 02 00 00')
+            reply = self.send_query(query)
+            query = self.formatQuery('18 08 10 18 02 03 00')
+            reply = self.send_query(query)
         query = self.formatQuery('1807 022018%b %w 3000 0a00 5000 %w 0000 ' \
                                  '%w %*', wchar, track, len(title), old_len,
                                  title)
