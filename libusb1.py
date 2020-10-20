@@ -1,6 +1,4 @@
 # libusb-1.0 python wrapper
-from builtins import range
-from builtins import object
 from ctypes import Structure, \
                    CFUNCTYPE, POINTER, addressof, sizeof, cast, \
                    c_short, c_int, c_uint, c_size_t, c_long, \
@@ -17,7 +15,7 @@ class Enum(object):
         reverse_dict = {}
         module_globals = globals()
         next_value = 0
-        for name, value in member_dict.items():
+        for name, value in member_dict.iteritems():
             if value is None:
                 value = next_value
                 next_value += 1
@@ -769,7 +767,7 @@ def libusb_get_iso_packet_buffer(transfer_p, packet):
     if packet >= transfer.num_iso_packets:
         return None
     iso_packet_desc_list = _get_iso_packet_list(transfer)
-    for i in range(packet):
+    for i in xrange(packet):
         offset += iso_packet_desc_list[i].length
     return _get_iso_packet_buffer(transfer, offset,
         iso_packet_desc_list[packet].length)

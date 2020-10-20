@@ -1,5 +1,5 @@
-from builtins import bytes
 import libusb1
+from cStringIO import StringIO
 from time import sleep
 from struct import pack
 try:
@@ -10,17 +10,8 @@ except ImportError:
     DES3 = None
 import array
 import random
-from future import standard_library
-standard_library.install_aliases()
 import sys
-from builtins import range
-from past.builtins import basestring
-from builtins import object
-import libusb1
-from io import StringIO
-from io import StringIO
-from time import sleep
-from struct import pack
+
 
 def dump(data):
     if isinstance(data, basestring):
@@ -46,7 +37,7 @@ def to_hex_str(direction, message):
         print message
 
 
-class defaultUploadEvents(object):
+class defaultUploadEvents:
     def progress(self, current):
         print 'Done: %x/%x (%.02f%%)' % (current, self.total,
                                          current/float(self.total) * 100)
@@ -166,7 +157,7 @@ class NetMDRejected(NetMDException):
     """
     pass
 
-class NetMD(object):
+class NetMD:
     """
       Low-level interface for a NetMD device.
     """
@@ -349,7 +340,7 @@ def int2BCD(value, length=1):
         nibble += 1
     return bcd
 
-class NetMDInterface(object):
+class NetMDInterface:
     """
       High-level interface for a NetMD device.
       Notes:
@@ -425,7 +416,7 @@ class NetMDInterface(object):
                 escaped = False
                 value = arg_stack.pop(0)
                 if char in _FORMAT_TYPE_LEN_DICT:
-                    for byte in range(_FORMAT_TYPE_LEN_DICT[char] - 1, -1, -1):
+                    for byte in xrange(_FORMAT_TYPE_LEN_DICT[char] - 1, -1, -1):
                         append((value >> (byte * 8)) & 0xff)
                 # String ('s' is 0-terminated, 'x' is not)
                 elif char in ('s', 'x'):
@@ -472,7 +463,7 @@ class NetMDInterface(object):
                     continue
                 if char in _FORMAT_TYPE_LEN_DICT:
                     value = 0
-                    for byte in range(_FORMAT_TYPE_LEN_DICT[char] - 1, -1, -1):
+                    for byte in xrange(_FORMAT_TYPE_LEN_DICT[char] - 1, -1, -1):
                         value |= (pop() << (byte * 8))
                     append(value)
                 # String ('s' is 0-terminated, 'x' is not)
@@ -805,7 +796,7 @@ class NetMDInterface(object):
                 track_min, track_max, track_count)
             track_list = []
             track_append = track_list.append
-            for track in range(track_min - 1, track_max):
+            for track in xrange(track_min - 1, track_max):
                 if track in track_dict:
                     raise ValueError('Track %i is in 2 groups: %r[%i] & '
                          '%r[%i]' % (track, track_dict[track][0],
@@ -813,7 +804,7 @@ class NetMDInterface(object):
                 track_dict[track] = group_name, group_index
                 track_append(track)
             append((group_name, track_list))
-        track_list = [x for x in range(track_count) if x not in track_dict]
+        track_list = [x for x in xrange(track_count) if x not in track_dict]
         if len(track_list):
             append((None, track_list))
         return result
@@ -1019,7 +1010,7 @@ class NetMDInterface(object):
                                     '%b %b %b 0005 %w %b %b %b 0005 %w %b ' \
                                     '%b %b')
         result = []
-        for offset in range(3):
+        for offset in xrange(3):
             offset *= 4
             result.append([
                 BCD2int(raw_result[offset + 0]),
@@ -1316,14 +1307,14 @@ diskforwire = {
 }
 
 
-class MDSession(object):
+class MDSession:
     def __init__(self, md_iface, ekbobject):
         self.md = md_iface
         self.sessionkey = None
         self.md.enterSecureSession()
         (chain, depth, sig) = ekbobject.getEKBDataForLeafId(self.md.getLeafID())
         self.md.sendKeyData(ekbobject.getEKBID(), chain, depth, sig)
-        hostnonce = array.array('B',[random.randrange(255) for x in range(8)]).tostring()
+        hostnonce = array.array('B',[random.randrange(255) for x in xrange(8)]).tostring()
         devnonce = self.md.sessionKeyExchange(hostnonce)
         nonce = hostnonce + devnonce
         self.sessionkey = retailmac(ekbobject.getRootKey(), nonce)
