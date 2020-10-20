@@ -1128,15 +1128,21 @@ class USBDevice(object):
         Get device's manufaturer name.
         Note: opens the device temporarily.
         """
-        return self._getASCIIStringDescriptor(
-            self.device_descriptor.iManufacturer)
+        try:
+            return self._getASCIIStringDescriptor(
+                self.device_descriptor.iManufacturer)
+        except:
+            return ''
 
     def getProduct(self):
         """
         Get device's product name.
         Note: opens the device temporarily.
         """
-        return self._getASCIIStringDescriptor(self.device_descriptor.iProduct)
+        try:
+            return self._getASCIIStringDescriptor(self.device_descriptor.iProduct)
+        except:
+            return ''
 
     def getSerialNumber(self):
         """
@@ -1331,4 +1337,3 @@ class LibUSBContext(object):
         effect.
         """
         libusb1.libusb_set_debug(self.__context_p, level)
-
