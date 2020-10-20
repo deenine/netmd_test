@@ -18,7 +18,6 @@ Features:
   Note: Isochronous support is experimental.
   See USBPoller, USBTransfer and USBTransferHelper.
 """
-from __future__ import print_function
 
 import libusb1
 from ctypes import byref, create_string_buffer, c_int, sizeof, POINTER, \
@@ -143,7 +142,7 @@ class USBTransfer(object):
                 # reference to transfer, so a segfault might happen anyway.
                 # Should we warn user ? How ?
                 self.cancel()
-            except self.__USBError as exception:
+            except self.__USBError, exception:
                 if exception.value == self.__LIBUSB_ERROR_NOT_FOUND:
                     # Transfer was not submitted, we can free it.
                     self.__libusb_free_transfer(self.__transfer)
@@ -992,27 +991,27 @@ class USBDevice(object):
         """
         out = StringIO()
         for config in self.__configuration_descriptor_list:
-            print('Configuration %i: %s' % (config.bConfigurationValue,
-                self._getASCIIStringDescriptor(config.iConfiguration)), file=out)
-            print('  Max Power: %i mA' % (config.MaxPower * 2, ), file=out)
+            print >> out, 'Configuration %i: %s' % (config.bConfigurationValue,
+                self._getASCIIStringDescriptor(config.iConfiguration))
+            print >> out, '  Max Power: %i mA' % (config.MaxPower * 2, )
             # TODO: bmAttributes dump
             for interface_num in xrange(config.bNumInterfaces):
                 interface = config.interface[interface_num]
-                print('  Interface %i' % (interface_num, ), file=out)
+                print >> out, '  Interface %i' % (interface_num, )
                 for alt_setting_num in xrange(interface.num_altsetting):
                     altsetting = interface.altsetting[alt_setting_num]
-                    print('    Alt Setting %i: %s' % (alt_setting_num,
-                        self._getASCIIStringDescriptor(altsetting.iInterface)), file=out)
-                    print('      Class: %02x Subclass: %02x' % \
+                    print >> out, '    Alt Setting %i: %s' % (alt_setting_num,
+                        self._getASCIIStringDescriptor(altsetting.iInterface))
+                    print >> out, '      Class: %02x Subclass: %02x' % \
                         (altsetting.bInterfaceClass,
-                         altsetting.bInterfaceSubClass), file=out)
-                    print('      Protocol: %02x' % \
-                        (altsetting.bInterfaceProtocol, ), file=out)
+                         altsetting.bInterfaceSubClass)
+                    print >> out, '      Protocol: %02x' % \
+                        (altsetting.bInterfaceProtocol, )
                     for endpoint_num in xrange(altsetting.bNumEndpoints):
                         endpoint = altsetting.endpoint[endpoint_num]
-                        print('      Endpoint %i' % (endpoint_num, ), file=out)
-                        print('        Address: %02x' % \
-                            (endpoint.bEndpointAddress, ), file=out)
+                        print >> out, '      Endpoint %i' % (endpoint_num, )
+                        print >> out, '        Address: %02x' % \
+                            (endpoint.bEndpointAddress, )
                         attribute_list = []
                         transfer_type = endpoint.bmAttributes & \
                             libusb1.LIBUSB_TRANSFER_TYPE_MASK
@@ -1029,16 +1028,16 @@ class USBDevice(object):
                                 (endpoint.bmAttributes & \
                                  libusb1.LIBUSB_ISO_USAGE_TYPE_MASK) >> 4
                             ))
-                        print('        Attributes: %s' % \
-                            (', '.join(attribute_list), ), file=out)
-                        print('        Max Packet Size: %i' % \
-                            (endpoint.wMaxPacketSize, ), file=out)
-                        print('        Interval: %i' % \
-                            (endpoint.bInterval, ), file=out)
-                        print('        Refresh: %i' % \
-                            (endpoint.bRefresh, ), file=out)
-                        print('        Sync Address: %02x' % \
-                            (endpoint.bSynchAddress, ), file=out)
+                        print >> out, '        Attributes: %s' % \
+                            (', '.join(attribute_list), )
+                        print >> out, '        Max Packet Size: %i' % \
+                            (endpoint.wMaxPacketSize, )
+                        print >> out, '        Interval: %i' % \
+                            (endpoint.bInterval, )
+                        print >> out, '        Refresh: %i' % \
+                            (endpoint.bRefresh, )
+                        print >> out, '        Sync Address: %02x' % \
+                            (endpoint.bSynchAddress, )
         return out.getvalue()
 
     def getBusNumber(self):
